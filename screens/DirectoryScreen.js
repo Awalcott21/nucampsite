@@ -1,34 +1,44 @@
-import { useState } from 'react';
-import { CAMPSITES } from '../shared/campsites';
 import { FlatList } from 'react-native';
-import { Avatar, ListItem } from 'react-native-elements';
+import { Tile } from 'react-native-elements';
+import { useSelector } from 'react-redux';
+import { baseUrl } from '../shared/baseUrl';
+import { Text, View } from 'react-native';
 
+const DirectoryScreen = ({ navigation }) => {
+    const campsites = useSelector((state) => state.campsites);
 
-const DirectoryScreen = ({ navigation}) => {
-const renderDirectoryItem = ({ item: campsite }) => {
+    if (campsites.isLoading) {
+        return <Loading />;
+    }
 
-    const [campsites, setCampsites] = useState(CAMPSITES);
-    
+    if (campsites.errMess) {
+        return (
+            <View>
+                <Text>{campsites.errMess}</Text>
+            </View>
+        );
+    }
+
+    const renderDirectoryItem = ({ item: campsite }) => {
+        return (
+            <Tile
+                title={campsite.name}
+                caption={campsite.description}
+                featured
+                onPress={() =>
+                    navigation.navigate('CampsiteInfo', { campsite })
+                }
+                imageSrc={{ uri: baseUrl + campsite.image }}
+            />
+        );
+    };
     return (
-        <ListItem onPress={() => navigation.navigate('CampsiteInfo', { campsite })}>
-            <Avatar source={campsite.image} rounded />
-            <ListItem.Content>
-                <ListItem.Title>{campsite.name}</ListItem.Title>
-                <ListItem.Subtitle>
-                    {campsite.description}
-                </ListItem.Subtitle>
-            </ListItem.Content>
-        </ListItem>
+        <FlatList
+            data={campsites.campsitesArray}
+            renderItem={renderDirectoryItem}
+            keyExtractor={(item) => item.id.toString()}
+        />
     );
 };
-};
-
-return (
-    <FlatList 
-    data={props.campsites}
-    renderItem={renderDirectoryItem}
-    keyExtractor={(item) => item.id.toString()}
-    />
-)
 
 export default DirectoryScreen;
