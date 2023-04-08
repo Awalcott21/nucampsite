@@ -10,6 +10,7 @@ import {
 } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import DateTimePicker from '@react-native-community/datetimepicker';
+import Animatable from 'react-native-animatable';
 
 const ReservationScreen = () => {
     const [campers, setCampers] = useState(1);
@@ -28,7 +29,26 @@ const ReservationScreen = () => {
         console.log('campers:', campers);
         console.log('hikeIn:', hikeIn);
         console.log('date:', date);
-        setShowModal(!showModal);
+
+        const title = 'Begin search?';
+        const message = `Number of Campers: ${campers}\nHike-In?: ${hikeIn}\nDate: ${date.toLocaleDateString("en-US")}`;
+
+        Alert.alert(
+            title,
+            message,
+            [
+                {
+                    text: "cancel",
+                    onPress: () => console.log("Cancel Pressed"),
+                    style: "cancel",
+                },
+                {
+                    text: "ok",
+                    onPress: () => console.log("Ok Pressed"),
+                },
+            ],
+            { cancelable: true }
+        );
     };
 
     const resetForm = () => {
@@ -41,19 +61,21 @@ const ReservationScreen = () => {
     return (
         <ScrollView>
             <View style={styles.formRow}>
-                <Text style={styles.formLabel}>Number of Campers:</Text>
-                <Picker
-                    style={styles.formItem}
-                    selectedValue={campers}
-                    onValueChange={(itemValue) => setCampers(itemValue)}
-                >
-                    <Picker.Item label='1' value={1} />
-                    <Picker.Item label='2' value={2} />
-                    <Picker.Item label='3' value={3} />
-                    <Picker.Item label='4' value={4} />
-                    <Picker.Item label='5' value={5} />
-                    <Picker.Item label='6' value={6} />
-                </Picker>
+                <Animatable.View animation="zoomIn" duration={2000} delay={1000}>
+                    <Text style={styles.formLabel}>Number of Campers:</Text>
+                    <Picker
+                        style={styles.formItem}
+                        selectedValue={campers}
+                        onValueChange={(itemValue) => setCampers(itemValue)}
+                    >
+                        <Picker.Item label='1' value={1} />
+                        <Picker.Item label='2' value={2} />
+                        <Picker.Item label='3' value={3} />
+                        <Picker.Item label='4' value={4} />
+                        <Picker.Item label='5' value={5} />
+                        <Picker.Item label='6' value={6} />
+                    </Picker>
+                </Animatable.View>
             </View>
             <View style={styles.formRow}>
                 <Text style={styles.formLabel}>Hike In?</Text>
@@ -121,7 +143,7 @@ const ReservationScreen = () => {
             </Modal>
         </ScrollView>
     );
-};
+}
 
 const styles = StyleSheet.create({
     formRow: {

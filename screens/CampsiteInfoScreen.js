@@ -51,27 +51,32 @@ const renderCommentItem = ({ item }) => {
 };
 
 return (
-    <FlatList
-        data={comments.commentsArray.filter(
-            (comment) => comment.campsiteId === campsite.id
-        )}
-        renderItem={renderCommentItem}
-        keyExtractor={(item) => item.id.toString()}
-        contentContainerStyle={{
-            marginHorizontal: 20,
-            paddingVertical: 20
-        }}
-        ListHeaderComponent={
-            <>
-                <RenderCampsite
-                    campsite={campsite}
-                    isFavorite={favorites.includes(campsite.id)}
-                    markFavorite={() => dispatch(toggleFavorite(campsite.id))}
+    <>
+        <FlatList
+            data={comments.commentsArray.filter(
+                (comment) => comment.campsiteId === campsite.id
+            )}
+            renderItem={renderCommentItem}
+            keyExtractor={(item) => item.id.toString()}
+            contentContainerStyle={{
+                marginHorizontal: 20,
+                paddingVertical: 20
+            }}
+            ListHeaderComponent={
+                <>
+                    <RenderCampsite
+                        campsite={campsite}
+                        isFavorite={favorites.includes(campsite.id)}
+                        markFavorite={() => dispatch(toggleFavorite(campsite.id))}
+        
+                    onShowModal={() => setShowModal(!showModal)}
                 />
-                <Text style={styles.commentsTitle}>Comments</Text>
-            </>
-        }
-    />
+                    <Text style={styles.commentsTitle}>Comments</Text>
+                </>
+            }
+        />
+        <CommentModal />
+    </>
 );
 
 <Modal
@@ -84,47 +89,48 @@ return (
         <Rating
             showRating
             startingValue={rating}
-            imagizeSize={40}
+            imagSize={40}
             onfinishRating={(rating) => setRating(rating)}
             style={{ paddingVertical: 10 }}
         />
-        <Input
-            placeholder="Author"
-            leftIcon={{ type: "font-awesome", name: "user-o" }}
-            leftIconContainerStyle={{ paddingRight: 10 }}
-            onChangeText={(author) => setAuthor(author)}
-            value={text}
-        />
-        <Input
-            placeholder="Comment"
-            leftIcon={{ type: "font-awesome", name: "comment-o" }}
-            leftIconContainerStyle={{ paddingRight: 10 }}
-            onChangeText={(text) => setText(text)}
-            value={text}
-        />
-        <View style={{ margin: 10 }}>
-            <Button
-                OnPress={0 => {
+    </View>
+    <Input
+        placeholder="Author"
+        leftIcon={{ type: "font-awesome", name: "user-o" }}
+        leftIconContainerStyle={{ paddingRight: 10 }}
+        onChangeText={(author) => setAuthor(author)}
+        value={text}
+    />
+    <Input
+        placeholder="Comment"
+        leftIcon={{ type: "font-awesome", name: "comment-o" }}
+        leftIconContainerStyle={{ paddingRight: 10 }}
+        onChangeText={(text) => setText(text)}
+        value={text}
+    />
+    <View style={{ margin: 10 }}>
+        <Button
+            OnPress={() => {
                 handleSubmit();
-            resetForm();
+                resetForm();
+            }}
             color="#5637DD"
             title="Submit"
-                    };
+        />
+    </View>
 
-            <View style={{ margin: 10 }}>
-                <Button
-                    OnPress={0=> {
-                    setShowModal(!showModal);
+    <View style={{ margin: 10 }}>
+        <Button
+            OnPress={() => {
+                setShowModal(!showModal);
                 resetForm();
-                    }}
-                color="#808080"
-                title="Cancel"
-            />
-            </View>
-        </View>
-</View>
+            }}
+            color="#808080"
+            title="Cancel"
+        />
+    </View>
 </Modal>
-    
+
 
 
 
