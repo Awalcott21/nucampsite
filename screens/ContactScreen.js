@@ -3,12 +3,22 @@ import { Text, View, ScrollView } from 'react-native';
 import { Card } from 'react-native-elements';
 import { createStackNavigator } from '@react-navigation/stack';
 import { createDrawerNavigator } from '@react-navigation/drawer';
+import { Button, Icon } from 'react-native-elements';
+import *as MailComposer from 'expo-mail-composer';
 import DirectoryScreen from './DirectoryScreen';
 import HomeScreen from './HomeScreen';
 
 const Drawer = createDrawerNavigator();
 
 const ContactScreen = () => {
+    const sendMail = () => {
+        MailComposer.composeAsync({
+            recipients: ['campsite@nucamp.co'],
+            subject: 'Inquiry',
+            body: 'To whom it may concern:'
+        });
+    };
+    
     return (
         <ScrollView>
             <Card wrapperStyle={{ margin: 20 }}>
