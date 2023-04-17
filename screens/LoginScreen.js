@@ -1,12 +1,12 @@
 import { useEffect, useState } from 'react';
-import { View, StyleSheet, ScrollView } from 'react-native';
+import { View, StyleSheet, ScrollView, Image } from 'react-native';
 import { CheckBox, Input, Button, Icon } from 'react-native-elements';
 import * as SecureStore from 'expo-secure-store';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { Image } from 'react-native';
-import { ImagePicker } from 'expo-image-picker';
-import { baseUrl } from './shared/baseUrl';
-import { Logo } from '../assests/images/logo.png';
+import * as ImagePicker from 'expo-image-picker';
+import { baseUrl } from '../shared/baseUrl';
+import logo from '../assets/images/logo.png';
+import ImageManipulator from 'expo-image-manipulator';
 
 const LoginTab = ({ navigation }) => {
     const [username, setUsername] = useState('');
@@ -105,11 +105,12 @@ const LoginTab = ({ navigation }) => {
 };
 
 const RegisterTab = () => {
-    const [username, setUsername] = useState('');
+
     const [password, setPassword] = useState('');
     const [firstName, setFirstName] = useState('');
     const [lastName, setLastName] = useState('');
     const [email, setEmail] = useState('');
+    const [imageUrl, setImageUrl] = useState(baseUrl + 'images/logo.png');
     const [remember, setRemember] = useState(false);
 
     const handleRegister = () => {
@@ -122,24 +123,6 @@ const RegisterTab = () => {
             remember
         };
 
-        const getImageFromCamera = async () => {
-            const cameraPermission = await ImagePicker.requestCameraPermissionsAsync();
-            if (!cameraPermission.granted) {
-                alert('Camera permission is required to take pictures.');
-                return;
-                const cameraPermission = await ImagePicker.requestCameraPermissionAsync();
-                if (!cameraPermission.status === 'granted')
-                    alert(`Camera p`)
-                const capturedImage = await ImagePicker.LaunchCameraAsync({
-                    allowsEditing: true,
-                    aspect: [1, 1]
-                });
-                if (!capturedImage.assests) {
-                    console.log(capturedImage.assets[0]);
-                    setImageUrl(capturedImage.assets[0].url);
-                }
-            }
-        };
         console.log(JSON.stringify(userInfo));
         if (remember) {
             SecureStore.setItemAsync(
@@ -156,7 +139,53 @@ const RegisterTab = () => {
         }
     };
 
-    const [imageUrl, setImageUrl] = useState(baseUrl + 'images/logo.png');
+    const getImageFromCamera = async () => {
+        const cameraPermission =
+            await ImagePicker.requestCameraPermissionsAsync();
+        if (cameraPermission.status === 'granted') {
+            const capturedImage = await ImagePicker.launchCameraAsync({
+                allowsEditing: true,
+                aspect: [1, 1]
+            });
+            if (capturedImage.assets) {
+                console.log(capturedImage.assets[0]);
+                processImage(capturedImage.assets[0].uri);
+                setImageUrl(capturedImage.assets[0].uri);
+            }
+        }
+    };
+
+    const processImage = async (imgUri) => {
+        const processedImage =
+            await ImageManipulator.manipulateAsync(
+                image.localUri || image.uri,
+                [{
+                    resize: {
+                        height: 400,
+                        width: 400
+                    }
+                }],
+                { format: SaveFormat.PNG }
+            );
+        console.log(processedImage)
+        setImageUrl(processedImage.uri)
+        return processedImage
+    };
+
+    const getImageFromGallery = async () => {
+        const mediaLibraryPermissions =
+            await ImagePicker.requestMediaLibraryPermissionsAsync();
+        if (mediaLibraryPermissions.status === 'granted') {
+            const capturedImage = await ImagePicker.launchImageLibraryAsync({
+                allowsEditing: true,
+                aspect: [1, 1]
+            });
+            if (capturedImage.assets) {
+                console.log(capturedImage.assets[0]);
+                processImage(capturedImage.assets[0].uri);
+            }
+        }
+    };
 
     return (
         <ScrollView>
@@ -236,6 +265,7 @@ const RegisterTab = () => {
         </ScrollView>
     );
 };
+
 
 const Tab = createBottomTabNavigator();
 
